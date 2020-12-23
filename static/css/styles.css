@@ -1,0 +1,120 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+a{
+    color: #893DFF;
+    font-weight: 600;
+}
+body{
+    font-family: 'Montserrat', sans-serif;
+        height: 100vh;
+}
+#formBack,#sideImage{
+    position: absolute;
+    top: 10%;
+}
+#formBack{
+    transition: all ease-in .2s;
+    left: 5vw;
+    box-shadow: 0px 10px 50px #cfcfcf;
+    border-radius: 10px;
+    padding: 30px;
+    width: 30vw;
+}
+#formBack h4{
+    font-weight: 400;
+    color: #a0a0a0;
+    margin: 5px 0px 30px 0px;
+}
+#sideImage{
+    right: 5%;
+}
+#sideImage img{
+    width: 50vw;
+}
+.inputForms{
+    font-size: 14px;
+    font-weight: 600;
+    color: #616161;
+    margin: 20px 0px;
+}
+.inputForms input{
+    display: block;
+    width: 100%;
+    padding: 15px 20px;
+    margin: 5px 0;
+    border: #a0a0a0 2px solid;
+    border-radius: 6px;
+}
+.inputForms a{
+    float: right;
+}
+.button{
+    padding: 15px;
+    border: none;
+    border-radius: 6px;
+    transition: all .2s ease-in;
+    cursor: pointer;
+}
+form button{
+    width: 100%;
+    background-color: #893DFF;
+    color: #fff;
+    font-weight: bold;
+    font-weight: 600;
+}
+form button:hover{
+    background-color: #fff;
+    color:#893DFF;
+    box-shadow: #8b3dff91 0px 0px 30px;
+}
+#rememberMe{
+    display: inline;
+    width: max-content;
+    cursor: pointer;
+}
+#authBut{
+    justify-content: space-around;
+    display: flex;
+    margin: 30px 0px;
+}
+.button img{
+    width: 20px;
+    height: 20px;
+    margin-right: 10px;
+}
+#googleAuth{
+    width: 48%;
+    background: transparent;
+    border: 1px solid tomato;
+    font-weight: 600;
+    color: tomato;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+#googleAuth:hover{
+    box-shadow: rgba(255, 99, 71, 0.329) 0px 10px 30px;
+}
+#facebookAuth{
+    display: inline;
+    float: right;
+    justify-content: center;
+    display: flex;
+    align-items: center;
+    width: 48%;
+    background: transparent;
+    border: 1px solid blue;
+    font-weight: 600;
+    color: blue;
+}
+
+#facebookAuth:hover{
+    box-shadow: rgba(0, 0, 255, 0.219) 0px 10px 30px;
+}
+#errors{
+    color: tomato;
+    font-size: 12px;
+}

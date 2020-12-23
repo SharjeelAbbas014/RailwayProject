@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css')}}">
+</head>
+
+<body>
+    <div id="formBack">
+        <div id="login">
+            <h2>Login</h2>
+            <h4>Doesn't have an account yet? <a href="#" onclick="signUp()">Sign Up</a></h4>
+            <form action="" onsubmit="event.preventDefault()">
+                <div class="inputForms">
+                    <label for="emailAddress">Email Address</label>
+                    <input type="email" name="emailAddress" placeholder="you@example.com" id="emailAddress">
+                </div>
+                <div class="inputForms">
+                    <label for="password">Password</label>
+                    <a href="#">Forgot Password?</a>
+                    <input type="password" name="password" placeholder="Enter 6 characters or more" id="password">
+                </div>
+                <div class="inputForms">
+                    <input type="checkbox" name="rememberMe" id="rememberMe">
+                    <label style="cursor: pointer; color: #a0a0a0" for="rememberMe">Remember me</label>
+                </div>
+                <button class="button" onclick="loginFunc()">LOGIN</button>
+            </form>
+            <div>
+            </div>
+        </div>
+        <div id="signup" style="display: none;">
+            <h2>Sign Up</h2>
+            <h4>Already have an account? <a href="#" onclick="loginF()">Login Here</a></h4>
+            <p id="errors"></p>
+            <form action="/" onsubmit="event.preventDefault()">
+                <div class="inputForms">
+                    <label for="emailAddressUp">Email Address</label>
+                    <input type="email" name="emailAddressUp" placeholder="you@example.com" id="emailAddressUp">
+                </div>
+                <div class="inputForms">
+                    <label for="fullNameUp">Full Name</label>
+                    <input type="text" name="fullNameUp" placeholder="Enter your Full Name" id="fullNameUp">
+                </div>
+                <div class="inputForms">
+                    <label for="passwordUp">Password</label>
+                    <input type="password" name="passwordUp" placeholder="Enter 6 characters or more" id="passwordUp">
+                </div>
+                <div class="inputForms">
+                    <label for="confirmPasswordUp">Confirm Password</label>
+                    <input type="password" name="confirmPasswordUp" placeholder="Enter your password again" id="confirmPasswordUp">
+                </div>
+                <button class="button" onclick="signUpFormSubmit()">SIGN UP</button>
+            </form>
+            <div>
+            </div>
+        </div>
+        <p style="text-align: center; color: #a0a0a0;margin-top: 20px;font-weight:bold;font-size:12px">---------- Or Login With ----------</p>
+        <div id="authBut">
+            <button class="button" id="googleAuth"><img src="{{ url_for('static', filename='images/google.png')}}" alt="Google Image"><p>Google</p></button>
+            <button class="button" id="facebookAuth"><img src="{{ url_for('static', filename='images/facebook.png')}}" alt="Facebook Image"><p>Facebook</p></button>
+        </div>
+    </div>
+    <div id="sideImage">
+        <img src="{{ url_for('static', filename='images/hero.jpg')}}" alt="Hero Image">
+    </div>
+
+
+
+    <script src="{{ url_for('static', filename='js/app.js')}}"></script>
+</body>
+
+</html>
