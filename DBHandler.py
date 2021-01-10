@@ -61,7 +61,7 @@ class DBHandler:
                 mydb.close()
 
     def deleteEmp(self, empId):
-        db = pymysql.connect(self.host, self.user, self.password, self.database)
+        db = pymysql.connect(host=self.host, user=self.user, password=self.password, database=self.database)
         cur = db.cursor()
         try:
             sql = 'delete from empsched where empid = %s'
@@ -83,7 +83,7 @@ class DBHandler:
             db.close()
 
     def getStations(self):
-        db = pymysql.connect(self.host, self.user, self.password, self.database)
+        db = pymysql.connect(host=self.host, user=self.user, password=self.password, database=self.database)
         cur = db.cursor()
         try:
             sql = 'SELECT * from trains'
@@ -131,7 +131,7 @@ class DBHandler:
             db.close()
 
     def getTicket(self, TID):
-        db = pymysql.connect(self.host, self.user, self.password, self.database)
+        db = pymysql.connect(host=self.host, user=self.user, password=self.password, database=self.database)
         cur = db.cursor()
         try:
             sql = 'SELECT * from ticketbooking ti,trains t,schedule s,passengers p where s.scheduleid = ti.scheduleid and t.trainid = s.trainid and ti.pid = p.pid and ti.bookid = %s'
@@ -175,7 +175,7 @@ class DBHandler:
             db.close()
 
     def addTicket(self, sess):
-        db = pymysql.connect(self.host, self.user, self.password, self.database)
+        db = pymysql.connect(host=self.host, user=self.user, password=self.password, database=self.database)
         cur = db.cursor()
         try:
             if sess.get("method") == None or sess.get("method") == "":
@@ -274,7 +274,7 @@ class DBHandler:
                 mydb.close()
 
     def getEmps(self):
-        db = pymysql.connect(self.host, self.user, self.password, self.database)
+        db = pymysql.connect(host=self.host, user=self.user, password=self.password, database=self.database)
         cur = db.cursor()
         try:
             sql = 'SELECT * from employee e, empsched es where es.EmpId = e.empid'
@@ -313,7 +313,7 @@ class DBHandler:
             db.close()
 
     def getSingleSched(self, sid):
-        db = pymysql.connect(self.host, self.user, self.password, self.database)
+        db = pymysql.connect(host=self.host, user=self.user, password=self.password, database=self.database)
         cur = db.cursor()
         try:
             sql = 'SELECT * from schedule s, trains t where s.ScheduleID = %s and t.trainid = s.trainid'
