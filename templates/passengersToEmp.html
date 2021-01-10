@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Passengers to Emp</title>
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,600;0,700;1,400&display=swap"
+          rel="stylesheet">
+    <style>
+        body{
+            background-color: #afebe5;
+            font-family: "Open Sans";
+        }
+        #cashHead{
+            text-align: center;
+            color: blue;
+            font-family: Algerian;
+        }
+        .passenger{
+            border: 1px solid black;
+            background-color: skyblue;
+            display: block;
+            width: auto;
+        }
+        .SinglePassenger{
+            text-align: center;
+            color: black;
+        }
+    </style>
+</head>
+<body>
+
+{% if check == False %}
+    <h2 style="color: #515151; text-align: center">No Passenger with Cash Payment in this Train</h2>
+{% endif %}
+
+{% if check == True %}
+    <h1 id="cashHead">Passengers with Cash Payment</h1>
+{#    {% passNo = 1 %}#}
+    {% for i in range(0, data|length) %}
+        <div class="passenger">
+            <h4 class="SinglePassenger">Passenger # {{ i|int + 1 }} </h4>
+            <b>Booking #</b> {{ data[i]["bookingid"] }}<br>
+            <b>Passenger # </b>{{ data[i]["pid"] }}<br>
+            <b>First Name: </b>{{ data[i]["firstname"] }}<br>
+            <b>Last Name: </b>{{ data[i]["lastname"] }}<br>
+            <b>CNIC # </b>{{ data[i]["cnic"] }}<br>
+            <b>Phone no </b>{{ data[i]["phone"] }}<br>
+            <b>Class </b>{{ data[i]["class"] }}<br>
+            <b>Number of Tickets: </b>{{ data[i]["numberOfTickets"] }}<br>
+        </div>
+        <br>
+{#        {% passNo = passNo + 1 %}#}
+    {% endfor %}
+
+
+{% endif %}
+</body>
+</html>
