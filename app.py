@@ -11,7 +11,7 @@ HOST = 'localhost'
 USER = 'root'
 PWD = ''
 DBNAME = 'railway'
-YOUR_DOMAIN = 'http://127.0.0.1:5000'
+YOUR_DOMAIN = 'http://pakrailway.tech'
 
 dbObj = DBHandler(HOST, USER, PWD, DBNAME)
 
@@ -62,6 +62,14 @@ def adminPanel():
         return render_template("showDetailsToAdmin.html", res=res, emp=emp, lineGraph=lineGraph, pie=pie)
     else:
         return render_template("adminlogin.html")
+
+@app.route('/changePass',methods=["POST"])
+def changePass():
+    passw = request.get_json(force=True)
+    passw["authId"]= session["auth"]["authID"]
+    if dbObj.changePass(passw):
+        return ""
+    return "notMatch"
 
 
 @app.route('/editSchedTrain', methods=["POST", "GET"])
@@ -263,6 +271,7 @@ def ticketDetail():
             tkid = int(request.args.get('tkid'))
 
             tks = dbObj.getSingleTicket(tkid)
+
             tmp = dbObj.getSchedule(tks['ScheduleID'])
             psnger = dbObj.getPassenger(session.get('auth').get('authID'))
             for k, v in tmp.items():
@@ -276,7 +285,9 @@ def ticketDetail():
     tks["eLocLong"] = 67.0011
     tks["sLocLat"] = 31.5305
     tks["sLocLong"] = 74.3613
-    print(tks)
+    if(tks["busOrEco"] == "B"):
+        tks["Fare"] = tks["Fare"]*.20 + tks["Fare"]
+    tks["Fare"] = tks["Fare"]*tks["numoftick"]
     return render_template("ticketDetail.html", pDetail=psnger, tks=tks)
 
 

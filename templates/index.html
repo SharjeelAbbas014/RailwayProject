@@ -13,6 +13,9 @@
         #bookingBack{
             z-index: 11000;
         }
+        .toast{
+            z-index: 11000;
+        }
         #invisible{
             z-index: 10000;
             width: 100vw;
@@ -83,11 +86,11 @@
         <div class="closeIcon" onclick="closeEdit()"><i style="color: #fff;font-size: 20px;" class="fas fa-times"></i></div>
         <p id="error" style=""></p>
         <div id="startInputDiv">
-            <input type="text" id="startField" onkeyup="startStationInput()" placeholder="From Where">
+            <input type="text" style="border-bottom: 1px solid #62c88b" id="startField" onkeyup="startStationInput()" placeholder="From Where">
             <div id="startItems"></div>
         </div>
         <div id="endInputDiv">
-            <input type="text" id="endField" onkeyup="endStationInput()" placeholder="To Where">
+            <input type="text" style="border-bottom: 1px solid #62c88b" id="endField" onkeyup="endStationInput()" placeholder="To Where">
             <div id="endItems"></div>
         </div>
     </div>

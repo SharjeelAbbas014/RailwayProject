@@ -20,7 +20,7 @@ class DBHandler:
             mydbCursor.execute(query, empID)
 
             ScheduleID = mydbCursor.fetchall()
-         
+
             if ScheduleID:
                 myList = []
                 toPass = "("
@@ -34,7 +34,7 @@ class DBHandler:
                 arg = values
                 mydbCursor.execute(queryTwo, arg)
                 result = mydbCursor.fetchall()
-                
+
                 resultList = []
                 for x in result:
                     mydict = {}
@@ -49,18 +49,17 @@ class DBHandler:
                     mydict["businessSeats"] = x[7]
                     resultList.append(mydict)
 
-                
                 return resultList
             else:
                 return "No Train Alloted"
         except Exception as e:
-            
+
             return False
         finally:
             if mydb != None:
                 mydb.close()
 
-    def checkTicket(self,busOrEco,NOT,sid):
+    def checkTicket(self, busOrEco, NOT, sid):
         db = pymysql.connect(host=self.host, user=self.user, password=self.password, database=self.database)
         cur = db.cursor()
         try:
@@ -68,17 +67,17 @@ class DBHandler:
                 sql = 'SELECT bussinesseatsremaining from schedule where scheduleid = %s'
             else:
                 sql = 'SELECT EconomySeatsRemaining from schedule where scheduleid = %s'
-            cur.execute(sql,(sid))
+            cur.execute(sql, (sid))
             res = cur.fetchall()
             print("res", res[0][0])
-            if(int(res[0][0]) >= int(NOT)):
+            if (int(res[0][0]) >= int(NOT)):
                 return True
             return False
         except Exception as e:
             print(str(e))
         finally:
             db.close()
-            
+
     def deleteEmp(self, empId):
         db = pymysql.connect(host=self.host, user=self.user, password=self.password, database=self.database)
         cur = db.cursor()
@@ -96,7 +95,7 @@ class DBHandler:
             return True
 
         except Exception as e:
-            
+
             return False
         finally:
             db.close()
@@ -128,9 +127,10 @@ class DBHandler:
                 finalsD["end"] = res[4]
                 finalsD["farePer"] = res[5]
                 finalsD["TrainName"] = res[-1]
-                if (res[6] != 0 or res[7] != 0) and (datetime.strptime(finalsD["time"], "%H:%M %d/%m/%Y")) > datetime.now():
+                if (res[6] != 0 or res[7] != 0) and (
+                        datetime.strptime(finalsD["time"], "%H:%M %d/%m/%Y")) > datetime.now():
                     finalRes.append(finalsD)
-            for i in range(0,len(trainList)):
+            for i in range(0, len(trainList)):
                 if trainList[i] not in added:
                     finalsD = dict()
                     finalsD["schedid"] = 0
@@ -140,7 +140,7 @@ class DBHandler:
                     finalsD["end"] = '0'
                     finalsD["farePer"] = '0'
                     finalsD["TrainName"] = names[i]
-                    
+
                     finalRes.append(finalsD)
             return finalRes
 
@@ -173,7 +173,7 @@ class DBHandler:
             ticket["CNIC"] = res[20]
             ticket["Phone"] = res[22]
             if ticket["busOrEco"] == "B":
-                ticket["ontickCost"] = ticket["ontickCost"]*.2 + ticket["ontickCost"]
+                ticket["ontickCost"] = ticket["ontickCost"] * .2 + ticket["ontickCost"]
                 ticket["fee"] = ticket["ontickCost"] * res[4]
                 ticket["busOrEco"] = "Business"
             else:
@@ -199,10 +199,10 @@ class DBHandler:
         try:
             if sess.get("method") == None or sess.get("method") == "":
                 sess["method"] = "Cash"
-            sql =""
+            sql = ""
             if sess.get("busOrEco") == "bus":
                 sql = 'insert into ticketbooking (bookid,pid,ScheduleID,payment,numoftick,busOrEco) values (null,%s,%s,%s,%s,%s)'
-                cur.execute(sql, (sess["pid"], sess["sid"], sess["method"], sess["not"],'B'))
+                cur.execute(sql, (sess["pid"], sess["sid"], sess["method"], sess["not"], 'B'))
                 db.commit()
                 sql = 'update schedule set BussinesSeatsRemaining = (select BussinesSeatsRemaining from schedule where scheduleid = %s)-%s where scheduleid = %s'
             else:
@@ -217,7 +217,7 @@ class DBHandler:
             return results[-1][0]
 
         except Exception as e:
-            
+
             return False
         finally:
             db.close()
@@ -254,7 +254,7 @@ class DBHandler:
                 return pid[0][0]
 
         except Exception as e:
-            
+
             successFullyInserted = False
             return successFullyInserted
         finally:
@@ -280,13 +280,13 @@ class DBHandler:
                 else:
                     mydbCursor.execute('select empid from employee where authid = %s', (result[0][1]))
                     eid = mydbCursor.fetchall()
-                    
+
                     resultList = ["True", r[0], eid[0][0]]
             else:
                 resultList = ["False", ""]
             return resultList
         except Exception as e:
-            
+
             return False
         finally:
             if mydb != None:
@@ -368,7 +368,7 @@ class DBHandler:
             mydb.commit()
             return True
         except Exception as e:
-            
+
             return False
         finally:
             if mydb != None:
@@ -393,10 +393,10 @@ class DBHandler:
                 d["method"] = r[4]
                 d["not"] = r[5]
                 finalRes.append(d)
-            
+
             return finalRes
         except Exception as e:
-            
+
             return False
         finally:
             if mydb != None:
@@ -423,7 +423,7 @@ class DBHandler:
                 finalRes.append(d)
             return finalRes
         except Exception as e:
-            
+
             return False
         finally:
             if mydb != None:
@@ -435,14 +435,14 @@ class DBHandler:
         alreadyEmps = []
         for a in alreadyAdded:
             alreadyEmps.append(a["eid"])
-        
+
         try:
             mydb = pymysql.connect(host=self.host, user=self.user, password=self.password, database=self.database)
             mydbCursor = mydb.cursor()
             sql = 'select empid, fname,lname,designation from employee'
             mydbCursor.execute(sql)
             results = mydbCursor.fetchall()
-            
+
             finalRes = []
             eid = []
             for r in results:
@@ -454,10 +454,10 @@ class DBHandler:
                     d["LName"] = r[2]
                     d["desig"] = r[3]
                     finalRes.append(d)
-            
+
             return finalRes
         except Exception as e:
-            
+
             return False
         finally:
             if mydb != None:
@@ -473,7 +473,7 @@ class DBHandler:
             mydb.commit()
             return True
         except Exception as e:
-            
+
             return False
         finally:
             if mydb != None:
@@ -489,7 +489,7 @@ class DBHandler:
             mydb.commit()
             return True
         except Exception as e:
-            
+
             return False
         finally:
             if mydb != None:
@@ -510,7 +510,7 @@ class DBHandler:
             mydb.commit()
             return True
         except Exception as e:
-            
+
             return False
         finally:
             if mydb != None:
@@ -548,10 +548,10 @@ class DBHandler:
             d["Phone"] = r[3]
             d["Des"] = r[4]
             d["empID"] = r[-1]
-            
+
             return d
         except Exception as e:
-            
+
             return False
         finally:
             if mydb != None:
@@ -602,7 +602,7 @@ class DBHandler:
             mydb.commit()
             return True
         except Exception as e:
-            
+
             return False
         finally:
             if mydb != None:
@@ -629,18 +629,17 @@ class DBHandler:
                     singlePassenger["cnic"] = x[10]
                     singlePassenger["phone"] = x[12]
                     singlePassenger["class"] = x[6]
-                    if(singlePassenger["class"] == "B"):
+                    if (singlePassenger["class"] == "B"):
                         singlePassenger["class"] = "Business"
                     else:
                         singlePassenger["class"] = "Economy"
                     allPassengers.append(singlePassenger)
 
-                
                 return allPassengers
             else:
                 return "No"
         except Exception as e:
-            
+
             return False
         finally:
             if mydb != None:
@@ -666,7 +665,7 @@ class DBHandler:
                     return True
 
         except Exception as e:
-            
+
             return False
         finally:
             if myDb != None:
@@ -685,7 +684,7 @@ class DBHandler:
                 return True
 
         except Exception as e:
-            
+
             return False
         finally:
             if myDb != None:
@@ -703,7 +702,7 @@ class DBHandler:
                 return item
 
         except Exception as e:
-            
+
             return False
         finally:
             if myDb != None:
@@ -722,7 +721,7 @@ class DBHandler:
                 return items
 
         except Exception as e:
-            
+
             return False
         finally:
             if myDb != None:
@@ -741,7 +740,7 @@ class DBHandler:
                 return item
 
         except Exception as e:
-            
+
             return item
         finally:
             if myDb != None:
@@ -759,7 +758,7 @@ class DBHandler:
                 item = myCur.fetchone()
                 return item
         except Exception as e:
-            
+
             return {}
         finally:
             if myDb != None:
@@ -795,7 +794,7 @@ class DBHandler:
                 return item
 
         except Exception as e:
-            
+
             return item
         finally:
             if myDb != None:
@@ -814,7 +813,7 @@ class DBHandler:
                 return item
 
         except Exception as e:
-            
+
             return item
         finally:
             if myDb != None:
@@ -833,7 +832,7 @@ class DBHandler:
                 return items
 
         except Exception as e:
-            
+
             return items
         finally:
             if myDb != None:
@@ -852,7 +851,7 @@ class DBHandler:
                 return items
 
         except Exception as e:
-            
+
             return items
         finally:
             if myDb != None:
@@ -871,11 +870,32 @@ class DBHandler:
                 return item
 
         except Exception as e:
-            
-            return item
+            return False
         finally:
             if myDb != None:
                 myDb.close()
+
+    def changePass(self, passw):
+        mydb = None
+        try:
+            mydb = pymysql.connect(host=self.host, user=self.user, password=self.password, database=self.database)
+            mydbCursor = mydb.cursor()
+            sql = 'select * from auth where authid = %s and password = %s'
+            mydbCursor.execute(sql,(passw["authId"],passw["old"]))
+            res = mydbCursor.fetchall()
+            if len(res) == 0:
+                return False
+            sql = 'update auth set password = %s where authId = %s'
+            mydbCursor.execute(sql, (passw["new"], passw["authId"]))
+            mydb.commit()
+            return True
+        except Exception as e:
+            print(str(e))
+            return False
+        finally:
+            if mydb != None:
+                mydb.close()
+
 
     def getDataForLineChart(self):
         mydb = None
@@ -887,18 +907,18 @@ class DBHandler:
             res = mydbCursor.fetchall()
             finalDict = dict()
             for r in res:
-                if(finalDict.get(r[0]) == None):
-                    finalDict[r[0]]=int(r[1])
+                if (finalDict.get(r[0]) == None):
+                    finalDict[r[0]] = int(r[1])
                 else:
                     finalDict[r[0]] += int(r[1])
             print(finalDict)
             return finalDict
         except Exception as e:
-            
             return False
         finally:
             if mydb != None:
                 mydb.close()
+
     def getDataForPieChart(self):
         mydb = None
         try:

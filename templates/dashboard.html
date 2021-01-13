@@ -2,6 +2,7 @@
 
 {% block head %}
 <link rel="icon" href="{{ url_for('static', filename='imgs/trainLogo.png') }}" type="image/png" sizes="16x16">
+    <link rel="stylesheet" href="{{ url_for('static', filename='fontAwesome/css/all.min.css') }}">
 
     <title>My Home</title>
     <style>
@@ -41,6 +42,36 @@
             font-size: 20px;
             font-weight: 600;
         }
+        #changeBack {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #fff;
+            padding: 30px 50px;
+            display: none;
+            z-index: 1000;
+            border-radius: 10px;
+        }
+
+        .closeIcon {
+            position: absolute;
+            top: 12px;
+            right: 30px;
+            font-size: 20px;
+            z-index: 10000;
+        }
+
+        #invisible {
+            display: none;
+            background: #00000099;
+            height: 100vh;
+            width: 100vw;
+            top: 0;
+            left: 0;
+            position: fixed;
+            z-index: 200;
+        }
     </style>
 {% endblock %}
 
@@ -52,7 +83,11 @@
             <div class="nav-wrapper teal darken-2">
                 <a href="/" style="margin-left: 20px; font-size: 20px" class="brand-logo">Pak Railway</a>
                 <ul id="nav-mobile" class="right hide-on-med-and-down">
+
                     <li><a href="/dashboard">My Profile</a></li>
+                    <li class="nav-item">
+                    <a class="nav-link active" onclick="changePassword()">Change Password</a>
+                </li>
                     <li><a href="/logout" onclick="M.toast({html: 'You Logged Out'})" class="">Logout</a></li>
                 </ul>
             </div>
@@ -142,5 +177,76 @@
 
     {% endif %}
 
+<div id="changeBack">
+    <div class="closeIcon" onclick="closeEdit()"><i style="color: #00af7a;font-size: 20px;" class="fas fa-times"></i>
+    </div>
+    <h2 style="font-size: 20px; margin: 0; padding: 10px;text-align: center">Change Password</h2>
+    <p id="errorText" style="text-align: center;color: tomato;font-size: 12px"></p>
+    <div class="row">
+        <div class="input-field col s12">
+            <input id="oldPass" type="password" class="validate">
+            <label for="oldPass">Old Password</label>
+        </div>
+    </div>
+    <div class="row">
+        <div class="input-field col s12">
+            <input id="newPass" type="password" class="validate">
+            <label for="newPass">New Password</label>
+        </div>
+    </div>
+    <div class="row">
+        <div class="input-field col s12">
+            <input id="newCPass" type="password" class="validate">
+            <label for="newCPass">Confirm New Password</label>
+        </div>
+    </div>
+    <button class="btn btn-danger" onclick="editPass()" style="display: block; margin: 0 auto">Change Password</button>
+</div>
+<div id="invisible" onclick="closeEdit()"></div>
+    <script>
+    const editPass = () => {
+        let oldP = document.getElementById("oldPass").value
+        let newP = document.getElementById("newPass").value
+        let newCP = document.getElementById("newCPass").value
 
+        if (newCP != newP) {
+            document.getElementById("errorText").innerText = "Error! Confirm Password must match"
+            return;
+        }
+        if (newCP.length <= 5) {
+            document.getElementById("errorText").innerText = "Error! Password length must be of atleast 6"
+            return;
+        }
+        passw = {}
+        passw["old"] = oldP
+        passw["new"] = newP
+        let xhttp = new XMLHttpRequest();
+        xhttp.open("POST", "/changePass", true);
+        xhttp.send(JSON.stringify(passw))
+        xhttp.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+                if (xhttp.responseText == "notMatch") {
+                    document.getElementById("errorText").innerText = "Error! Old Password is not correct"
+                    return;
+                }
+                else{
+                    document.getElementById("errorText").innerText = "Password Change Successfully"
+                    document.getElementById("errorText").style.color = "#40E0D0"
+                    return;
+                }
+            } else {
+                console.log("UnSuccessful Request")
+            }
+        };
+    }
+
+    const changePassword = () => {
+        document.getElementById('changeBack').style.display = "block"
+        document.getElementById('invisible').style.display = "block"
+    }
+    const closeEdit = () => {
+        document.getElementById('changeBack').style.display = 'none'
+        document.getElementById('invisible').style.display = "none"
+    }
+    </script>
 {% endblock %}
