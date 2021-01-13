@@ -4,6 +4,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <link rel="icon" href="{{ url_for('static', filename='imgs/trainLogo.png') }}" type="image/png" sizes="16x16">
+
     <link rel="stylesheet" href="{{ url_for('static', filename='fontAwesome/css/all.min.css') }}">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet"
           integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
@@ -178,9 +180,6 @@
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav">
                 <li class="nav-item">
-                    <a class="nav-link active" href="/admin">Admin Panel</a>
-                </li>
-                <li class="nav-item">
                     <a class="nav-link active" href="/login">Login</a>
                 </li>
                 <li class="nav-item">
@@ -193,7 +192,7 @@
 <div id="loginBack">
     <div id="leftSide">
         <h2>Create New Account</h2>
-
+    <p style="text-align: center; color: tomato" id="errorMessage">{{ msg }}</p>
         <form onsubmit="event.preventDefault(); checkUser()">
             <label for="username">Username</label>
             <input type="text" id="username" value="{{ values['username'] }}" name="user" placeholder="Enter Username"
@@ -290,6 +289,7 @@
                 if (result === "True") {
                     window.location = '/login'
                 } else {
+                    document.getElementById("errorMessage").innerText = "User Name Already Exist";
                     showToast("Error", "User with same user name already exist")
                 }
             } else {

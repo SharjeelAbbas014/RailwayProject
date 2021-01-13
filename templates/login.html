@@ -5,6 +5,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='fontAwesome/css/all.min.css') }}">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet"
           integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
+          <link rel="icon" href="{{ url_for('static', filename='imgs/trainLogo.png') }}" type="image/png" sizes="16x16">
 
     <style>
         .navbar-collapse {
@@ -164,13 +165,21 @@
             min-height: 100vh;
             min-width: 100vw;
         }
+
+        .toast {
+            background-color: tomato;
+            position: absolute;
+            top: 10vh;
+            z-index: 1000;
+            right: 20px;
+        }
     </style>
 {% endblock %}
 
 {% block body %}
-<div id="backs">
-    <div></div>
-</div>
+    <div id="backs">
+        <div></div>
+    </div>
     <div id="loginBack">
         <div id="leftSide">
             <h1>Login</h1>
@@ -191,28 +200,50 @@
     </div>
 
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
-        <div class="container-fluid">
-            <a style="margin-left: 30px" class="navbar-brand" href="/">Pakistan Railway</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav">
-                    <li class="nav-item">
-                        <a class="nav-link active" href="/admin">Admin Panel</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link active" href="/login">Login</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link active" href="/signUp">Sign Up</a>
-                    </li>
-                </ul>
-            </div>
+    <div class="container-fluid">
+        <a style="margin-left: 30px" class="navbar-brand" href="/">Pakistan Railway</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link active" href="/login">Login</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="/signUp">Sign Up</a>
+                </li>
+            </ul>
         </div>
-    </nav>
+    </div>
+</nav>
+    <div class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header">
+            <strong class="mr-auto">Bootstrap</strong>
+        </div>
+        <div class="toast-body">
+            Hello, world! This is a toast message.
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js"
             integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW"
             crossorigin="anonymous"></script>
+
+    <script>
+        msg = {{ msg|tojson }};
+        const showToast = (top, msg) => {
+            document.getElementsByClassName('mr-auto')[0].innerHTML = top
+            document.getElementsByClassName('toast-body')[0].innerHTML = msg
+            var toastElList = [].slice.call(document.querySelectorAll('.toast'))
+            var toastList = toastElList.map(function (toastEl) {
+                return new bootstrap.Toast(toastEl)
+            })
+            toastList[0].show()
+        }
+        if (msg != "") {
+            showToast("Error", "Invalid Username and Password Combination")
+        }
+    </script>
 {% endblock %}

@@ -60,8 +60,27 @@ class DBHandler:
             if mydb != None:
                 mydb.close()
 
+    def checkTicket(self,busOrEco,NOT,sid):
+        db = pymysql.connect(self.host, self.user, self.password, self.database)
+        cur = db.cursor()
+        try:
+            if busOrEco == "bus":
+                sql = 'SELECT bussinesseatsremaining from schedule where scheduleid = %s'
+            else:
+                sql = 'SELECT EconomySeatsRemaining from schedule where scheduleid = %s'
+            cur.execute(sql,(sid))
+            res = cur.fetchall()
+            print("res", res[0][0])
+            if(int(res[0][0]) >= int(NOT)):
+                return True
+            return False
+        except Exception as e:
+            print(str(e))
+        finally:
+            db.close()
+            
     def deleteEmp(self, empId):
-        db = pymysql.connect(host=self.host, user=self.user, password=self.password, database=self.database)
+        db = pymysql.connect(self.host, self.user, self.password, self.database)
         cur = db.cursor()
         try:
             sql = 'delete from empsched where empid = %s'
@@ -83,7 +102,7 @@ class DBHandler:
             db.close()
 
     def getStations(self):
-        db = pymysql.connect(host=self.host, user=self.user, password=self.password, database=self.database)
+        db = pymysql.connect(self.host, self.user, self.password, self.database)
         cur = db.cursor()
         try:
             sql = 'SELECT * from trains'
@@ -131,7 +150,7 @@ class DBHandler:
             db.close()
 
     def getTicket(self, TID):
-        db = pymysql.connect(host=self.host, user=self.user, password=self.password, database=self.database)
+        db = pymysql.connect(self.host, self.user, self.password, self.database)
         cur = db.cursor()
         try:
             sql = 'SELECT * from ticketbooking ti,trains t,schedule s,passengers p where s.scheduleid = ti.scheduleid and t.trainid = s.trainid and ti.pid = p.pid and ti.bookid = %s'
@@ -175,7 +194,7 @@ class DBHandler:
             db.close()
 
     def addTicket(self, sess):
-        db = pymysql.connect(host=self.host, user=self.user, password=self.password, database=self.database)
+        db = pymysql.connect(self.host, self.user, self.password, self.database)
         cur = db.cursor()
         try:
             if sess.get("method") == None or sess.get("method") == "":
@@ -274,7 +293,7 @@ class DBHandler:
                 mydb.close()
 
     def getEmps(self):
-        db = pymysql.connect(host=self.host, user=self.user, password=self.password, database=self.database)
+        db = pymysql.connect(self.host, self.user, self.password, self.database)
         cur = db.cursor()
         try:
             sql = 'SELECT * from employee e, empsched es where es.EmpId = e.empid'
@@ -313,7 +332,7 @@ class DBHandler:
             db.close()
 
     def getSingleSched(self, sid):
-        db = pymysql.connect(host=self.host, user=self.user, password=self.password, database=self.database)
+        db = pymysql.connect(self.host, self.user, self.password, self.database)
         cur = db.cursor()
         try:
             sql = 'SELECT * from schedule s, trains t where s.ScheduleID = %s and t.trainid = s.trainid'
@@ -757,7 +776,6 @@ class DBHandler:
                 myCur.execute(sql, (authID))
                 item = myCur.fetchone()
                 return item
-
         except Exception as e:
             return item
         finally:

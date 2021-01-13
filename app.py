@@ -12,6 +12,10 @@ USER = 'root'
 PWD = ''
 DBNAME = 'railway'
 YOUR_DOMAIN = 'http://127.0.0.1:5000'
+
+dbObj = DBHandler(HOST, USER, PWD, DBNAME)
+
+
 app = Flask(__name__)
 
 oauth = OAuth(app)
@@ -34,31 +38,28 @@ stripe.api_key = 'sk_test_51I1U9bLxCWtLRhQtx7wtMLdfyPb2N1jCYshldNsibfJdoO3xZQ7PK
 adminUsername = "BITF18M"
 adminPassword = "web12345"
 
-
 @app.route('/')
 def Home():
     session["sid"] = ""
     session["method"] = ""
     session["not"] = ""
-    db = DBHandler(HOST, USER, PWD, DBNAME)
-    res = db.getStations()
+
+    res = dbObj.getStations()
     return render_template("index.html", sched=json.dumps(res))
 
 
 @app.route('/admin')
 def adminPanel():
     if session.get("admin") is not None:
-        db = DBHandler("localhost", "root", "", "railway")
-        res = db.getStations()
-        emp = db.getEmps()
-        pie = db.getDataForPieChart()
-        lineChart = db.getDataForLineChart()
+        res = dbObj.getStations()
+        emp = dbObj.getEmps()
+        pie = dbObj.getDataForPieChart()
+        lineChart = dbObj.getDataForLineChart()
         lineGraph = []
         for d in lineChart.keys():
             lineGraph.append({"date": d, "quant": lineChart[d]})
         res.sort(key=itemgetter('TrainName'))
-        return render_template("showDetailsToAdmin.html", res=res, emp=emp,lineGraph=lineGraph,pie=pie)
-        render_template('showDetailsToAdmin.html')
+        return render_template("showDetailsToAdmin.html", res=res, emp=emp, lineGraph=lineGraph, pie=pie)
     else:
         return render_template("adminlogin.html")
 
@@ -66,7 +67,7 @@ def adminPanel():
 @app.route('/editSchedTrain', methods=["POST", "GET"])
 def editSchedTrain():
     if (request.args.get("schedid") != None or request.method == 'POST'):
-        dbObj = DBHandler("localhost", "root", "", "railway")
+
         if (request.method == "GET"):
             sid = request.args.get("schedid")
             sched = dbObj.getSingleSched(sid)
@@ -87,7 +88,7 @@ def editSchedTrain():
 def deleteEmpFromTrain():
     sid = request.args.get("sid")
     eid = request.args.get("eid")
-    dbObj = DBHandler("localhost", "root", "", "railway")
+
     dbObj.deleteEmpSched(eid, sid)
 
     return redirect(url_for("editSchedTrain") + '?schedid=' + str(sid))
@@ -99,7 +100,7 @@ def addEmpToTrain():
         sid = request.form.get("schedId")
         empTrain = request.form.get("empTrain")
         eid = empTrain[0:empTrain.find(' ')]
-        dbObj = DBHandler("localhost", "root", "", "railway")
+
         dbObj.addEmployToSched(eid, sid)
         return redirect(url_for("editSchedTrain") + '?schedid=' + str(sid))
     else:
@@ -108,7 +109,7 @@ def addEmpToTrain():
 
 @app.route('/addTrain', methods=["POST"])
 def addTrain():
-    dbObj = DBHandler("localhost", "root", "", "railway")
+
     if dbObj.addTrain(request.get_json(force=True)["trainName"]):
         return "added"
     return "already"
@@ -116,7 +117,7 @@ def addTrain():
 
 @app.route('/addEmployee', methods=["POST"])
 def addEmployee():
-    dbObj = DBHandler("localhost", "root", "", "railway")
+
     res = dbObj.addEmployee(request.get_json(force=True))
     if res == False:
         return "already"
@@ -125,7 +126,7 @@ def addEmployee():
 
 @app.route('/addSched', methods=["POST"])
 def addSched():
-    dbObj = DBHandler("localhost", "root", "", "railway")
+
     if dbObj.addSched(request.get_json(force=True)):
         return "added"
     return "already"
@@ -133,17 +134,18 @@ def addSched():
 
 @app.route('/login', methods=['POST', 'GET'])
 def login():
-    obj = DBHandler("localhost", "root", "", "railway")
+
+    pw = ""
     if request.method == "POST":
         user = request.form['user']
         pw = request.form['pw']
-        auth = obj.getAuth(user, pw)
+        auth = dbObj.getAuth(user, pw)
 
         if auth != None:
             session.permanent = True
             session['auth'] = auth
             if auth['role'] == 'P':
-                psnger = obj.getPassenger(auth['authID'])
+                psnger = dbObj.getPassenger(auth['authID'])
                 session['pid'] = psnger['PID']
                 if session.get("not") != None and session.get("not") != "":
                     return redirect(url_for('bookTicket'))
@@ -158,23 +160,30 @@ def login():
             auth = session['auth']
             if auth != None:
                 if auth['role'] == 'P':
-                    psnger = obj.getPassenger(auth['authID'])
+                    psnger = dbObj.getPassenger(auth['authID'])
                     session['pid'] = psnger['PID']
                     if session.get("not") != None and session.get("not") != "":
                         return redirect(url_for('bookTicket'))
                     return redirect(url_for('dashboard'))
+                elif auth['role'] == 'A' or auth['role'] == 'a':
+                    session["admin"] = auth['username']
+                    return redirect(url_for("adminPanel"))
                 else:
                     return redirect(url_for('employee'))
-
-    return render_template("login.html")
+    if pw == "":
+        return render_template("login.html", msg="")
+    else:
+        pw = ""
+        return render_template("login.html", msg="error")
 
 
 @app.route('/signUp', methods=['POST', 'GET'])
 def signup():
+    if 'auth' in session:
+        return redirect(url_for("login"))
     p = {}
     passenger = {}
     values = {}
-    obj = DBHandler("localhost", "root", "", "railway")
 
     values['username'] = ""
     values['fname'] = ""
@@ -190,24 +199,24 @@ def signup():
         conPass = request.form['conPass']
         if pw != conPass:
             err = "Password do not match"
-            return render_template("signup.html", values=values)
+            return render_template("signup.html", values=values, err=err)
         else:
             p['username'] = user
             p['password'] = pw
             p['role'] = "P"
 
-            if obj.setAuth(p):
+            if dbObj.setAuth(p):
 
                 passenger['fname'] = request.form['fname']
                 passenger['lname'] = request.form['lname']
                 passenger['cnic'] = request.form['cnic']
                 passenger['ph'] = request.form['ph']
 
-                authID = obj.getAuthId(user)
+                authID = dbObj.getAuthId(user)
                 passenger['authID'] = authID['authID']
 
-                if obj.setPassenger(passenger):
-                    auth = obj.getAuth(user, pw)
+                if dbObj.setPassenger(passenger):
+                    auth = dbObj.getAuth(user, pw)
                     if auth != None:
                         session.permanent = True
                         session['auth'] = auth
@@ -237,8 +246,8 @@ def CreateNewAccount():
     PhoneNumber = abc["PhoneNumber"]
     password = abc["pass"]
 
-    dbObj = DBHandler("localhost", "root", "", "railway")
-    result = dbObj.insertRecord(username, firstName, lastName, CNICno, PhoneNumber, password)
+    result = dbObj.insertRecord(
+        username, firstName, lastName, CNICno, PhoneNumber, password)
     if result == False:
         return "False"
     else:
@@ -252,14 +261,14 @@ def ticketDetail():
     if request.args:
         if 'tkid' in request.args:
             tkid = int(request.args.get('tkid'))
-            obj = DBHandler("localhost", "root", "", "railway")
-            tks = obj.getSingleTicket(tkid)
-            tmp = obj.getSchedule(tks['ScheduleID'])
-            psnger = obj.getPassenger(session.get('auth').get('authID'))
+
+            tks = dbObj.getSingleTicket(tkid)
+            tmp = dbObj.getSchedule(tks['ScheduleID'])
+            psnger = dbObj.getPassenger(session.get('auth').get('authID'))
             for k, v in tmp.items():
                 tks[k] = v
 
-            tmp = obj.getTrain(tks['TrainID'])
+            tmp = dbObj.getTrain(tks['TrainID'])
             for k, v in tmp.items():
                 tks[k] = v
 
@@ -278,12 +287,12 @@ def employee():
 
     if 'auth' in session:
         auth = session['auth']
-        obj = DBHandler("localhost", "root", "", "railway")
-        emp = obj.getEmployee(auth['authID'])
+
+        emp = dbObj.getEmployee(auth['authID'])
         if auth != None and emp != None:
             session['empid'] = emp['empid']
 
-            data = obj.employeeTrains(emp['empid'])
+            data = dbObj.employeeTrains(emp['empid'])
             if data == "No Train Alloted":
                 check = False
             else:
@@ -298,7 +307,7 @@ def employee():
 def employeeMenu():
     session["empID"] = 11
     if session.get("empID") != None:
-        dbObj = DBHandler("localhost", "root", "", "railway")
+
         data = dbObj.employeeTrains(session.get("empID"))
         if data == "No Train Alloted":
             check = False
@@ -319,14 +328,13 @@ def googleLogin():
 @app.route('/authorize')
 def authorize():
     passenger = {}
-    obj = DBHandler("localhost", "root", "", "railway")
 
     google = oauth.create_client('google')
     token = google.authorize_access_token()
     resp = google.get('userinfo')
     user_info = resp.json()
     user = oauth.google.userinfo()
-    auth = obj.getAuth(user['email'], user['sub'])
+    auth = dbObj.getAuth(user['email'], user['sub'])
     if auth == None:
         passenger['user'] = user['email']
         passenger['pw'] = user['sub']
@@ -347,10 +355,12 @@ def sendMailTicket():
         receiverEmail = ticketDetailsJson["email"]
         s = smtplib.SMTP('smtp.gmail.com', 587)
         s.starttls()
-        subject = "Your Ticket from " + ticketDetailsJson["From"] + " to " + ticketDetailsJson["To"]
+        subject = "Your Ticket from " + \
+            ticketDetailsJson["From"] + " to " + ticketDetailsJson["To"]
         body = "Here's you ticket Details: \n Train Name: {} \n From: {} \n To: {} \n Time: {} \n Number of Tickets: {} \n Method: {} \n Total Dues: {} \n Class: {} \n Payable: {}".format(
             ticketDetailsJson["Train"], ticketDetailsJson["From"], ticketDetailsJson["To"], ticketDetailsJson["Time"],
-            ticketDetailsJson["NumOfTick"], ticketDetailsJson["Method"], ticketDetailsJson["fee"], ticketDetailsJson["busOrEco"],
+            ticketDetailsJson["NumOfTick"], ticketDetailsJson["Method"], ticketDetailsJson["fee"],
+            ticketDetailsJson["busOrEco"],
             ticketDetailsJson["RemainingP"])
         myEmail = "sharjeelabbas014@gmail.com"
         s.login("sharjeelabbas014@gmail.com", "tkpvyteorhiqacod")
@@ -363,24 +373,24 @@ def sendMailTicket():
         print(str(e))
         return ""
 
+
 @app.route('/dashboard')
 def dashboard():
-    obj = DBHandler("localhost", "root", "", "railway")
 
     if 'auth' in session:
         auth = session['auth']
 
-        psnger = obj.getPassenger(auth['authID'])
+        psnger = dbObj.getPassenger(auth['authID'])
 
         if auth != None and psnger != None:
             session['pid'] = psnger['PID']
             for k, v in auth.items():
                 psnger[k] = v
 
-            tks = obj.getTickets(psnger['PID'])
+            tks = dbObj.getTickets(psnger['PID'])
             if len(tks) > 0:
                 for t in tks:
-                    tmp = obj.getSchedule(t['ScheduleID'])
+                    tmp = dbObj.getSchedule(t['ScheduleID'])
                     for k, v in tmp.items():
                         t[k] = v
                 i = 1
@@ -388,7 +398,7 @@ def dashboard():
 
                     t['no'] = i
                     i += 1
-                    tmp = obj.getTrain(t['TrainID'])
+                    tmp = dbObj.getTrain(t['TrainID'])
                     for k, v in tmp.items():
                         t[k] = v
                     t['class'] = ""
@@ -397,6 +407,7 @@ def dashboard():
             return render_template("dashboard.html", psnger=psnger, tks=tks)
 
     return redirect(url_for('login'))
+
 
 @app.route('/logout')
 def logout():
@@ -420,7 +431,6 @@ def AdminLogIn():
 @app.route('/showAllPassengers', methods=["POST"])
 def showPassengers():
     SID = json.loads(request.data)
-
     session["scheduleID"] = SID
     return render_template("passengersToEmp.html")
 
@@ -428,8 +438,8 @@ def showPassengers():
 @app.route('/showPassengersToEmp')
 def showPassengersToEmp():
     SID = session["scheduleID"]
-    db = DBHandler(HOST, USER, PWD, DBNAME)
-    res = db.PasssengersWithCash(SID)
+
+    res = dbObj.PasssengersWithCash(SID)
     if res == "No":
         check = False
     else:
@@ -442,8 +452,8 @@ def trainDetails():
     session["sid"] = ""
     session["method"] = ""
     session["not"] = ""
-    db = DBHandler(HOST, USER, PWD, DBNAME)
-    res = db.getStations()
+
+    res = dbObj.getStations()
     return render_template("trainDetails.html", sched=json.dumps(res))
 
 
@@ -454,7 +464,7 @@ ticketDetails = ""
 def bookTicket():
     global ticketDetails
     print(session)
-    if session.get('auth').get("role") == "E":
+    if session.get('auth') != None and (session.get('auth').get("role") == "E" or session.get('auth').get("role") == "A"):
         session.clear()
     if request.method == "POST":
         ticketDetails = request.get_json(force=True)
@@ -462,7 +472,7 @@ def bookTicket():
         session["not"] = ticketDetails["numOfTickets"]
         session["busOrEco"] = ticketDetails["busOrEco"]
         det = ticketDetails["others"]
-        if(session["busOrEco"] == "bus"):
+        if (session["busOrEco"] == "bus"):
             num = det[-4:]
             final = ""
             if num[0] == ":":
@@ -481,14 +491,18 @@ def bookTicket():
                     final = final + " " + str(num)
             ticketDetails["others"] = final
         print(ticketDetails["others"])
-        if session.get("pid") is not None:
-            return "GOTIT"
-        return "LOGIN"
+        if dbObj.checkTicket(session["busOrEco"],session["not"],session["sid"]) == True:
+            if session.get("pid") is not None:
+                return "GOTIT"
+            return "LOGIN"
+        else:
+            return "Error"
     else:
-        if session.get("not") != None and session.get('not')!="":
+        if session.get("not") != None and session.get('not') != "":
             return render_template("paymentSelection.html")
         else:
             return redirect(url_for('Home'))
+
 
 
 @app.route('/paywithmastercard')
@@ -513,8 +527,8 @@ def paywithjazzcash():
 @app.route('/deleteEmp', methods=["POST"])
 def deleteEmp():
     empid = request.get_json(force=True)["empId"]
-    db = DBHandler("localhost", "root", "", "railway")
-    if db.deleteEmp(empid):
+
+    if dbObj.deleteEmp(empid):
         return "success"
     return "error"
 
@@ -522,31 +536,31 @@ def deleteEmp():
 @app.route('/editEmp', methods=["POST"])
 def editEmp():
     emp = request.get_json(force=True)
-    db = DBHandler("localhost", "root", "", "railway")
-    if db.editEmp(emp):
+
+    if dbObj.editEmp(emp):
         return "success"
     return "error"
 
 
 @app.route('/success')
 def masterSucc():
-    db = DBHandler(HOST, USER, PWD, DBNAME)
-    bookid = db.addTicket(session)
+
+    bookid = dbObj.addTicket(session)
     return render_template('success.html', bookid=bookid)
 
 
 @app.route('/jazzcashsuccess', methods=["POST", "GET"])
 def jazzcashsuccess():
-    db = DBHandler(HOST, USER, PWD, DBNAME)
-    bookid = db.addTicket(session)
+
+    bookid = dbObj.addTicket(session)
     return render_template('success.html', bookid=bookid)
 
 
 @app.route('/showTicket', methods=["GET"])
 def showTicket():
     ticketId = request.args.get("ticket")
-    db = DBHandler(HOST, USER, PWD, DBNAME)
-    res = db.getTicket(ticketId)
+
+    res = dbObj.getTicket(ticketId)
     return render_template("showTicket.html", ticket=res)
 
 
@@ -580,3 +594,7 @@ def create_checkout_session():
     except Exception as e:
         print(str(e))
         return jsonify(error=str(e)), 403
+
+
+if __name__ == "__main__":
+    app.run(debug=True)

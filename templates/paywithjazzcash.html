@@ -81,9 +81,10 @@
 
 </script>
 <script src="https://sandbox.jazzcash.com.pk/Sandbox/Scripts/hmac-sha256.js"></script>
+<link rel="icon" href="{{ url_for('static', filename='imgs/trainLogo.png') }}" type="image/png" sizes="16x16">
 
-<h3>JazzCash HTTP POST (Page Redirection) Testing</h3>
-<div class="jsformWrapper">
+<h3>JazzCash Redirection</h3>
+<div class="jsformWrapper" style="display: none">
     <form name="jsform" method="post"
           action="https://sandbox.jazzcash.com.pk/CustomerPortal/transactionmanagement/merchantform/">
         <input type="hidden" name="pp_Version" value="1.1">
@@ -97,16 +98,16 @@
 
         <div class="formFielWrapper">
             <label class="active">pp_TxnRefNo: </label>
-            <input type="text" name="pp_TxnRefNo" id="pp_TxnRefNo" value="T20201231135217">
+            <input type="text" name="pp_TxnRefNo" id="pp_TxnRefNo" value="T{{ dateT }}">
         </div>
 
         <div class="formFielWrapper">
             <label class="active">pp_Amount: </label>
-            <input type="text" name="pp_Amount" value="{{ fare }}">
+            <input type="text" name="pp_Amount" id="fare" value="">
         </div>
 
         <input type="hidden" name="pp_TxnCurrency" value="PKR">
-        <input type="hidden" name="pp_TxnDateTime" value="20201231135217">
+        <input type="hidden" name="pp_TxnDateTime" value="{{ dateT }}">
         <div class="formFielWrapper">
             <label class="active">pp_BillReference: </label>
             <input type="text" name="pp_BillReference" value="billRef">
@@ -117,7 +118,7 @@
             <input type="text" name="pp_Description" value="Description of transaction">
         </div>
 
-        <input type="hidden" name="pp_TxnExpiryDateTime" value="20210101135217">
+        <input type="hidden" name="pp_TxnExpiryDateTime" value="{{ dateEx }}">
 
         <div class="formFielWrapper">
             <label class="active">pp_ReturnURL: </label>
@@ -144,6 +145,10 @@
 </div>
 
 <script>
+    let fare = {{ fare|tojson }};
+    console.log(fare);
+    document.getElementById('fare').value = fare
+
     function CalculateHash() {
         var IntegritySalt = document.getElementById("salt").innerText;
         hashString = '';
@@ -218,6 +223,7 @@
         document.getElementById("hashValuesString").value = hashString;
     }
 
+    submitForm();
 </script>
 
                                     
