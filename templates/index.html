@@ -9,6 +9,24 @@
           integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
 
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styles.css') }}">
+    <style>
+        #bookingBack{
+            z-index: 11000;
+        }
+        #invisible{
+            z-index: 10000;
+            width: 100vw;
+            height: 100vh;
+            display: none;
+            position: fixed;
+            background: rgba(0, 0, 0, 0.75);
+        }
+        .closeIcon{
+            z-index: 20000;
+            width: 20px;
+            height: 20px;
+        }
+    </style>
 </head>
 <body>
 <div>
@@ -62,7 +80,7 @@
 <div id="bookingBack">
     <div id="bookingTop">
         <h2>Book A Ticket</h2>
-        <div class="closeIcon" onclick="closeEdit()"><i style="color: #fff" class="fas fa-times"></i></div>
+        <div class="closeIcon" onclick="closeEdit()"><i style="color: #fff;font-size: 20px;" class="fas fa-times"></i></div>
         <p id="error" style=""></p>
         <div id="startInputDiv">
             <input type="text" id="startField" onkeyup="startStationInput()" placeholder="From Where">
@@ -114,7 +132,7 @@
         Hello, world! This is a toast message.
     </div>
 </div>
-
+<div id="invisible" onclick="closeEdit()"></div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW"
         crossorigin="anonymous"></script>
@@ -125,9 +143,11 @@
 
     const showPopUp = () => {
         document.getElementById('bookingBack').style.display = "block"
+        document.getElementById('invisible').style.display="block"
     }
     const closeEdit = () => {
         document.getElementById('bookingBack').style.display = "none"
+        document.getElementById('invisible').style.display="none"
     }
 </script>
 <script>
