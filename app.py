@@ -253,7 +253,7 @@ def updatePassProfile():
         psnger = session['psnger']
         user['authID'] = psnger['authID']
         user['PID'] = psnger['PID']
-        obj.updatePassenger(user)
+        dbObj.updatePassenger(user)
 
     return redirect(url_for('dashboard'))
 
