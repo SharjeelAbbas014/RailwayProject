@@ -48,6 +48,8 @@
                 title: "Hello World!",
                 icon: "{{ url_for('static', filename='imgs/train.png') }}"
             });
+            console.log(document.getElementsByTagName('img')[0])
+            document.getElementsByTagName('img')[0].src = "https://i.pinimg.com/originals/cf/58/4a/cf584aff36fb87c055a8a026bfcb859e.png"
         }
 
         latlng = {lat: tks["sLocLat"], lng: tks['sLocLong']};
@@ -71,14 +73,21 @@
                     <li><a href="/dashboard">My Profile</a></li>
                     <li><a href="/logout" onclick="M.toast({html: 'You Logged Out'})" class="">Logout</a></li>
                 </ul>
+                <a href="#" data-target="mobile-demo" class="sidenav-trigger"><i class="material-icons">menu</i></a>
             </div>
         </nav>
+        <ul class="sidenav" id="mobile-demo">
+            <li><a href="/showTicket?ticket={{ tks['BookID'] }}">Get Ticket</a></li>
+            <li><a href="/dashboard">My Profile</a></li>
+            <li><a href="/logout" onclick="M.toast({html: 'You Logged Out'})" class="">Logout</a></li>
+        </ul>
+
         <div class="container  center">
             <div class="row">
                 <div class="card">
                     <div class="card-panel">
                         <h3>Ticket Detail</h3>
-                        <table class="centered">
+                        <table class="centered responsive-table">
                             <thead>
                             <tr>
                                 <th>Ticket ID</th>
@@ -86,7 +95,6 @@
                                 <th>From</th>
                                 <th>To</th>
                                 <th>Time And Date</th>
-                                <th>Num Of Tickets</th>
                                 <th>Fare</th>
                                 <th>Payment</th>
                             </tr>
@@ -98,7 +106,6 @@
                                 <td>{{ tks['FromStation'] }}</td>
                                 <td>{{ tks['ToStation'] }}</td>
                                 <td>{{ tks['DeptTime'] }}</td>
-                                <td>{{ tks["numoftick"] }}</td>
                                 <td>{{ tks['Fare'] }}</td>
                                 <td>{{ tks['Payment'] }}</td>
                             </tr>

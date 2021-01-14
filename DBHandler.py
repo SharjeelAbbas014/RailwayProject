@@ -945,30 +945,24 @@ class DBHandler:
         finally:
             if mydb != None:
                 mydb.close()
+                
+    def updatePassenger(self, user):
 
-    def getBarGraphData(self):
-        mydb = None
         try:
-            mydb = pymysql.connect(host=self.host, user=self.user, password=self.password, database=self.database)
-            mydbCursor = mydb.cursor()
-            sql = 'select count(*) from ticketbooking where Payment = "Cash"'
-            mydbCursor.execute(sql)
-            cash = mydbCursor.fetchall()
-            sql = 'select count(*) from ticketbooking where Payment = "Card"'
-            mydbCursor.execute(sql)
-            card = mydbCursor.fetchall()
-            sql = 'select count(*) from ticketbooking where Payment = "Jazz"'
-            mydbCursor.execute(sql)
-            jazz = mydbCursor.fetchall()
-            finalDict = dict()
-            finalDict["cash"] = cash
-            finalDict["jazz"] = jazz
-            finalDict["card"] = card
-            print(finalDict)
-            return finalDict
-        except Exception as e:
+            myDb = self.myDb = pymysql.connect(
+                host=self.host, user=self.user, password=self.password, db=self.database, cursorclass=pymysql.cursors.DictCursor)
+            with myDb.cursor() as myCur:
 
+                passQuery = "UPDATE `passengers` SET `fname` = %s, `lname` = %s, `cnic` = %s, `phone` = %s WHERE `PID` = %s"
+                myCur.execute(
+                    passQuery, (user['fname'], user['lname'], user['cnic'], user['phone'], user['PID']))
+                myDb.commit()
+                return True
+
+        except Exception as e:
+            print(e)
             return False
+
         finally:
-            if mydb != None:
-                mydb.close()
+            if myDb != None:
+                myDb.close()

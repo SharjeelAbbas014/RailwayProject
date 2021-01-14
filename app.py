@@ -35,8 +35,6 @@ google = oauth.register(
 app.secret_key = "jf3j98j4jfowijf98"
 stripe.api_key = 'sk_test_51I1U9bLxCWtLRhQtx7wtMLdfyPb2N1jCYshldNsibfJdoO3xZQ7PKhep2pJGPtmtg5ysDcPfGd8CV6XMxazRc4OB00iBlfF2kJ'
 
-adminUsername = "BITF18M"
-adminPassword = "web12345"
 
 @app.route('/')
 def Home():
@@ -244,6 +242,21 @@ def signup():
     return render_template("signup.html", values=values)
 
 
+@app.route("/updatePassProfile", methods=['POST', 'GET'])
+def updatePassProfile():
+    user = {}
+    if request.method == "POST":
+        user['fname'] = request.form['fname']
+        user['lname'] = request.form['lname']
+        user['cnic'] = request.form['cnic']
+        user['phone'] = request.form['ph']
+        psnger = session['psnger']
+        user['authID'] = psnger['authID']
+        user['PID'] = psnger['PID']
+        obj.updatePassenger(user)
+
+    return redirect(url_for('dashboard'))
+
 @app.route('/createAccount', methods=["POST"])
 def CreateNewAccount():
     abc = json.loads(request.data)
@@ -414,7 +427,7 @@ def dashboard():
                         t[k] = v
                     t['class'] = ""
                 tks[0]['class'] = "active"
-
+            session['psnger'] = psnger
             return render_template("dashboard.html", psnger=psnger, tks=tks)
 
     return redirect(url_for('login'))
