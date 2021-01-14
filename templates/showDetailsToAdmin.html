@@ -816,7 +816,7 @@
         };
         setTimeout(() => {
             document.getElementsByClassName('toast')[0].style.display = 'none'
-        }, 1000)
+        }, 2000)
         Http.open("POST", '/addEmployee', true);
         Http.send(JSON.stringify(Emp))
     }
@@ -868,7 +868,7 @@
         Http.send(JSON.stringify({empId: id}))
         setTimeout(() => {
             document.getElementsByClassName('toast')[0].style.display = 'none'
-        }, 1000)
+        }, 2000)
 
         for (let i = 0; i < emps.length; i++) {
             if (emps[i]["empID"] == id) {
@@ -951,7 +951,7 @@
         Http.send(JSON.stringify(emp))
         setTimeout(() => {
             document.getElementsByClassName('toast')[0].style.display = 'none'
-        }, 1000)
+        }, 2000)
     }
     const closeEdit = () => {
         document.getElementById('editEmp').style.display = 'none'
