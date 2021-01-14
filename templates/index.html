@@ -144,7 +144,7 @@
         crossorigin="anonymous"></script>
 <script>
     var vid = document.getElementById("myVideo");
-    vid.playbackRate = 1;
+    vid.playbackRate = 2;
 
 
     const showPopUp = () => {
@@ -228,7 +228,7 @@
         document.getElementById('startItems').innerHTML = str;
         let startNames = document.getElementsByClassName('startNames')
         for (let i = 0; i < startNames.length; i++) {
-            startNames[i].onclick = () => setName("start", i)
+            startNames[i].onclick = () => setName("start", i, true)
         }
     }
     const notIn = (s) => {
@@ -239,14 +239,14 @@
         }
         return false
     }
-    const endStationInput = () => {
+    const endStationInput = (aa = "") => {
         let endField = document.getElementById('endField').value;
         let startField = document.getElementById('startField').value;
         if (startField == "" || notIn(startField) == false) {
             document.getElementById("error").innerHTML = "Please Select Starting First";
             return
         }
-        if (endField == "") {
+        if (endField == "" && aa == "") {
             document.getElementById('endItems').innerHTML = ""
             return
         }
@@ -292,11 +292,14 @@
         }
         slcTimeAndUserD.innerHTML = str;
     }
-    const setName = (id, i) => {
+    const setName = (id, i, st = false) => {
         let startNames = document.getElementsByClassName(id + "Names")
         document.getElementById(id + "Field").value = startNames[i].innerHTML
         document.getElementById(id + "Items").innerHTML = "";
         getDates()
+        if(st){
+        endStationInput("a")
+        }
     }
 </script>
 </body>

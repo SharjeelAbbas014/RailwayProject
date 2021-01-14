@@ -14,53 +14,65 @@
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;300;400;500;600;700;800&display=swap"
           rel="stylesheet">
+          <style>
+              #bookingBack{
+                  display: block;
+              }
+              body{
+                  background: linear-gradient(to top right, rgb(133, 216, 184), rgb(213, 255, 244));
+                  height: 100vh;
+                  width: 100vw;
+              }
+          </style>
 </head>
 
 <body>
-<div id="bookingBack">
-    <div id="bookingTop">
-        <h2>Book A Ticket</h2>
-        <p id="error" style=""></p>
-        <div id="startInputDiv">
-            <input type="text" id="startField" onkeyup="startStationInput()" placeholder="From Where">
-            <div id="startItems"></div>
+    <div id="bookingBack">
+        <div id="bookingTop">
+            <h2>Book A Ticket</h2>
+            <p id="error" style=""></p>
+            <div id="startInputDiv">
+                <input type="text" style="border-bottom: 1px solid #62c88b" id="startField" onkeyup="startStationInput()" placeholder="From Where">
+                <div id="startItems"></div>
+            </div>
+            <div id="endInputDiv">
+                <input type="text" style="border-bottom: 1px solid #62c88b" id="endField" onkeyup="endStationInput()" placeholder="To Where">
+                <div id="endItems"></div>
+            </div>
         </div>
-        <div id="endInputDiv">
-            <input type="text" id="endField" onkeyup="endStationInput()" placeholder="To Where">
-            <div id="endItems"></div>
+        <div id="bookingBot">
+            <div class="slcTimeAndUser">
+                <div>
+                    <i style="color: #a8a8a8;" class="fas fa-calendar-alt"></i>
+                    <select id="slcTimeAndUserD" class="form-control" id="exampleFormControlSelect1">
+                        <option disabled selected value="">Select Date And Time</option>
+                    </select>
+                </div>
+            </div>
+            <div id="ticketTypeRadio">
+                <div>
+                    <input type="radio" id="eco" name="ticketType" value="male" checked>
+                    <label for="eco">Economy</label>
+                </div>
+                <div>
+                    <input type="radio" id="bus" name="ticketType" value="female">
+                    <label for="bus">Business</label>
+                </div>
+            </div>
+                        <p style="text-align: center;font-size: 12px ; color: #7d7d7d">Business Class costs 20% more</p>
+    
+            <div class="slcTimeAndUser">
+                <div>
+                    <i style="color: #a8a8a8;" class="fas fa-user"></i>
+                    <input id="slcTimeAndUserN" placeholder="Number of Tickets" type="number">
+                </div>
+            </div>
+            <button onclick="submitForm()">
+                <p style="display: inline;">BOOK NOW!</p> <i style="font-size: 30px; margin-left: 40px"
+                                                             class="fas fa-long-arrow-alt-right"></i>
+            </button>
         </div>
     </div>
-    <div id="bookingBot">
-        <div class="slcTimeAndUser">
-            <div>
-                <i style="color: #a8a8a8;" class="fas fa-calendar-alt"></i>
-                <select id="slcTimeAndUserD" class="form-control" id="exampleFormControlSelect1">
-                    <option disabled selected value="">Select Date And Time</option>
-                </select>
-            </div>
-        </div>
-        <div id="ticketTypeRadio">
-            <div>
-                <input type="radio" id="eco" name="ticketType" value="male" checked>
-                <label for="eco">Economy</label>
-            </div>
-            <div>
-                <input type="radio" id="bus" name="ticketType" value="female">
-                <label for="bus">Business</label>
-            </div>
-        </div>
-        <div class="slcTimeAndUser">
-            <div>
-                <i style="color: #a8a8a8;" class="fas fa-user"></i>
-                <input id="slcTimeAndUserN" placeholder="Number of Tickets" type="number">
-            </div>
-        </div>
-        <button onclick="submitForm()">
-            <p style="display: inline;">BOOK NOW!</p> <i style="font-size: 30px; margin-left: 40px"
-                                                         class="fas fa-long-arrow-alt-right"></i>
-        </button>
-    </div>
-</div>
 <div class="toast" role="alert" aria-live="assertive" aria-atomic="true">
     <div class="toast-header">
         <strong class="mr-auto">Bootstrap</strong>
@@ -110,13 +122,19 @@
         xhttp.send(JSON.stringify(detailsToSend))
         xhttp.onreadystatechange = function () {
             if (this.readyState == 4 && this.status == 200) {
-                if (xhttp.responseText == "GOTIT") {
+                if(xhttp.responseText == "Error"){
+                    showToast("Error","Not Enough Seats avaialable in this schedule")
+                }
+                else if (xhttp.responseText == "GOTIT") {
                     window.location.href = "/paymentSelection"
                 } else {
                     window.location.href = "/login"
                 }
             }
         };
+        setTimeout(()=>{
+            document.getElementsByClassName('toast')[0].style.display = 'none'
+        },1000)
     }
 
     const startStationInput = () => {
@@ -139,7 +157,7 @@
         document.getElementById('startItems').innerHTML = str;
         let startNames = document.getElementsByClassName('startNames')
         for (let i = 0; i < startNames.length; i++) {
-            startNames[i].onclick = () => setName("start", i)
+            startNames[i].onclick = () => setName("start", i, true)
         }
     }
     const notIn = (s) => {
@@ -150,14 +168,14 @@
         }
         return false
     }
-    const endStationInput = () => {
+    const endStationInput = (aa = "") => {
         let endField = document.getElementById('endField').value;
         let startField = document.getElementById('startField').value;
         if (startField == "" || notIn(startField) == false) {
             document.getElementById("error").innerHTML = "Please Select Starting First";
             return
         }
-        if (endField == "") {
+        if (endField == "" && aa == "") {
             document.getElementById('endItems').innerHTML = ""
             return
         }
@@ -203,11 +221,14 @@
         }
         slcTimeAndUserD.innerHTML = str;
     }
-    const setName = (id, i) => {
+    const setName = (id, i, st = false) => {
         let startNames = document.getElementsByClassName(id + "Names")
         document.getElementById(id + "Field").value = startNames[i].innerHTML
         document.getElementById(id + "Items").innerHTML = "";
         getDates()
+        if(st){
+        endStationInput("a")
+        }
     }
 </script>
 </body>

@@ -428,7 +428,8 @@ def dashboard():
                     t['class'] = ""
                 tks[0]['class'] = "active"
             session['psnger'] = psnger
-            return render_template("dashboard.html", psnger=psnger, tks=tks)
+            res = dbObj.getStations()
+            return render_template("dashboard.html", psnger=psnger, tks=tks,sched=json.dumps(res))
 
     return redirect(url_for('login'))
 
