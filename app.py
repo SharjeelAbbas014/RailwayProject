@@ -539,15 +539,50 @@ def paywithmastercard():
 def paywithjazzcash():
     d = datetime.today()
     session["method"] = "Jazz"
-    ticketDetails["date"] = str(d.second + d.minute + d.hour + d.day + d.month)
+    # ticketDetails["date"] = str(d.second + d.minute + d.hour + d.day + d.month)
+    mo = ""
+    ho = ""
+    do = ""
+    mino = ""
+    so = ""
+    if (d.month <= 9):
+        mo = "0"
+    if (d.hour <= 9):
+        ho = "0"
+    if (d.day <= 9):
+        do = "0"
+    if (d.minute <= 9):
+        mino = "0"
+    if (d.second <= 9):
+        so = "0"
+    dateT = str(str(d.year) + mo + str(d.month) + do + str(d.day) + ho + str(d.hour) + mino + str(d.minute) + so + str(
+        d.second))
+    print(dateT)
+
+    if (d.month >= 10):
+        mo = ""
+    if (d.hour == 9):
+        ho = ""
+    if (d.day >= 10):
+        do = ""
+    if (d.minute >= 10):
+        mino = ""
+    if (d.second >= 10):
+        so = ""
+    dateEx = str(
+        str(d.year) + mo + str(d.month) + do + str(d.day) + ho + str(d.hour + 1) + mino + str(d.minute) + so + str(
+            d.second))
+    print(dateEx)
+
     fare = 0
     if ((ticketDetails["others"][-4:])[0] == ':'):
         fare = int(ticketDetails["others"][-3:])
     else:
         fare = int(ticketDetails["others"][-4:])
-    return render_template("paywithjazzcash.html", ticketDetails=ticketDetails, fare=fare * int(session["not"]))
-
-
+    return render_template("paywithjazzcash.html", ticketDetails=ticketDetails, fare=int(fare) * 100 * int(session["not"]),
+                           dateT=dateT, dateEx=dateEx)
+    
+    
 @app.route('/deleteEmp', methods=["POST"])
 def deleteEmp():
     empid = request.get_json(force=True)["empId"]
