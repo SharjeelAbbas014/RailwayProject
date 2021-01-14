@@ -538,6 +538,7 @@ def paywithmastercard():
 @app.route('/paywithjazzcash')
 def paywithjazzcash():
     d = datetime.today()
+    d = d + timedelta(hours=5)
     session["method"] = "Jazz"
     # ticketDetails["date"] = str(d.second + d.minute + d.hour + d.day + d.month)
     mo = ""
