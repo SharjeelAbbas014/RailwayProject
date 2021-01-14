@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>Ticket</title>
     <link rel="icon" href="{{ url_for('static', filename='imgs/trainLogo.png') }}" type="image/png" sizes="16x16">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet"
@@ -22,6 +23,7 @@
             position: absolute;
             top: 20px;
             z-index: 1000;
+            display: none;
             right: 20px;
         }
 
@@ -319,6 +321,7 @@
     detailsToSend = {{ticket|tojson}}
         console.log(detailsToSend)
     const sendToMail = () => {
+        document.getElementsByClassName('toast')[0].style.display = 'block'
         if (document.getElementById('email').value == "") {
             return
         }
@@ -335,6 +338,9 @@
                 }
             }
         }
+        setTimeout(()=>{
+            document.getElementsByClassName('toast')[0].style.display = 'none'
+        },1000)
     }
 </script>
 </body>

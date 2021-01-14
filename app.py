@@ -138,7 +138,7 @@ def addSched():
     return "already"
 
 
-@app.route('/login', methods=['POST', 'GET'])
+@app.route('/login',methods=['POST', 'GET'])
 def login():
 
     pw = ""

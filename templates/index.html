@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <link rel="stylesheet" href="{{ url_for('static', filename='fontAwesome/css/all.min.css') }}">
     <title>Railway</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
     <link rel="icon" href="{{ url_for('static', filename='imgs/trainLogo.png') }}" type="image/png" sizes="16x16">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet"
           integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
@@ -15,6 +17,7 @@
         }
         .toast{
             z-index: 11000;
+            display: none;
         }
         #invisible{
             z-index: 10000;
@@ -200,6 +203,9 @@
                 }
             }
         };
+        setTimeout(()=>{
+            document.getElementsByClassName('toast')[0].style.display = 'none'
+        },1000)
     }
 
     const startStationInput = () => {
